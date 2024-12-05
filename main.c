@@ -657,6 +657,14 @@ invert(MPZ_Object *self)
     }
 }
 
+static MPZ_Object *
+MPZ_lshift(MPZ_Object *u, MPZ_Object *v)
+{
+    MPZ_Object *res = MPZ_new(u->size + 1, 0);
+    mpn_lshift(res->digits, u->digits, u->size, v->digits);
+
+    return res;
+}
 
 static PyObject *
 lshift(PyObject *a, PyObject *b)
@@ -666,29 +674,12 @@ lshift(PyObject *a, PyObject *b)
     CHECK_OP(u, a);
     CHECK_OP(v, b);
 
-    res = (PyObject*)PyNumber_Lshift(a, b);
+    res = (PyObject*)MPZ_lshift(u, v);
 end:
     FREE_OP(u);
     FREE_OP(v);
     return (PyObject*)res;
 }
-
-
-static PyObject *
-rshift(PyObject *a, PyObject *b)
-{
-    PyObject *res = NULL;
-
-    CHECK_OP(u, a);
-    CHECK_OP(v, b);
-
-    res = (PyObject*)PyNumber_Rshift(a, b);
-end:
-    FREE_OP(u);
-    FREE_OP(v);
-    return (PyObject*)res;
-}
-
 
 static MPZ_Object *
 MPZ_and(MPZ_Object *u, MPZ_Object *v)
