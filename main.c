@@ -661,16 +661,32 @@ invert(MPZ_Object *self)
 static PyObject *
 lshift(PyObject *a, PyObject *b)
 {
-    PyErr_SetString(PyExc_NotImplementedError, "mpz.__lshift__");
-    return NULL;
+    PyObject *res = NULL;
+
+    CHECK_OP(u, a);
+    CHECK_OP(v, b);
+
+    res = (PyObject*)PyNumber_Lshift(a, b);
+end:
+    FREE_OP(u);
+    FREE_OP(v);
+    return (PyObject*)res;
 }
 
 
 static PyObject *
 rshift(PyObject *a, PyObject *b)
 {
-    PyErr_SetString(PyExc_NotImplementedError, "mpz.__rshift__");
-    return NULL;
+    PyObject *res = NULL;
+
+    CHECK_OP(u, a);
+    CHECK_OP(v, b);
+
+    res = (PyObject*)PyNumber_Rshift(a, b);
+end:
+    FREE_OP(u);
+    FREE_OP(v);
+    return (PyObject*)res;
 }
 
 

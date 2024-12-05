@@ -136,6 +136,19 @@ def test_power(x, y):
 def test_invert(x):
     assert ~mpz(x) == ~x
 
+@given(integers(), integers())
+def test_lshift(x, y):
+    r = x << y
+    assert mpz(x) << mpz(y) == r
+    assert mpz(x) << y == r
+    assert x << mpz(x) == r
+
+@given(integers(), integers())
+def test_rshift(x, y):
+    r = x >> y
+    assert mpz(x) >> mpz(y) == r
+    assert mpz(x) >> y == r
+    assert x >> mpz(x) == r
 
 @given(integers(), integers())
 def test_and(x, y):
