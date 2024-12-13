@@ -217,6 +217,48 @@ const unsigned char gmp_digit_value_tab[] =
   -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 };
 
+int
+underscores_as_number(char *str, Py_ssize_t *len)
+{
+    int i, j, skip;
+    char next, prev;
+    char *buf = PyMem_Malloc(sizeof(char) * (*len) + 1);
+
+    i = j = skip = 0;
+    next = prev = '\0';
+    if (*len == 0 || str == NULL) {
+        goto error;
+    }
+
+    while(i < *len) {
+        next = str[i + 1];
+        if (str[i] == ' ') {
+            prev = str[i++];
+            skip++;
+            continue;
+        }
+        if (str[i] == '_') {
+            if ((next == '_' || next == ' ' || next == '\0')
+                || (prev == '_' || prev == ' ' || prev == '\0')) {
+                goto error;
+            }
+            prev = str[i++];            
+            skip++;
+            continue;
+        }
+        prev = str[i];
+        buf[j++] = str[i++];
+    }
+    *len -= skip;
+    memcpy(str, buf, *len + 1);
+    str[*len] = '\0';
+    PyMem_Free(buf);
+
+    return 0;
+error:
+    PyMem_Free(buf);
+    return 1;
+}
 
 static MPZ_Object *
 MPZ_from_str(PyObject *s, int base)
@@ -230,6 +272,7 @@ MPZ_from_str(PyObject *s, int base)
     Py_ssize_t len;
     const char *str = PyUnicode_AsUTF8AndSize(s, &len);
 
+    underscores_as_number((char *)str, &len);
     if (!str) {
         return NULL;
     }
